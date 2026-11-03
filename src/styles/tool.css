@@ -1,0 +1,34 @@
+/* Shared styles for tool pages: the settings panel and the product input. */
+.tool { display: grid; grid-template-columns: 320px 1fr; gap: 24px; align-items: start; margin-top: 24px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; position: sticky; top: 16px; }
+.panel fieldset { border: 0; padding: 0; margin: 0 0 20px; }
+.panel legend { font-weight: 700; margin-bottom: 8px; }
+.panel label { display: block; font-size: 14px; margin: 10px 0 4px; }
+.panel input[type='text'], .panel input[type='url'], .panel input[type='number'], .panel select, .panel textarea {
+  width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--bg); color: var(--ink); font: inherit;
+}
+.panel label.check { display: flex; gap: 8px; align-items: center; }
+.panel .row { display: flex; gap: 8px; }
+.tabs { display: flex; gap: 4px; margin-bottom: 8px; }
+.tab { flex: 1; padding: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 8px; font: inherit; font-size: 14px; cursor: pointer; }
+.tab.active { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.file input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.file span { display: block; text-align: center; padding: 14px; border: 1px dashed var(--accent); border-radius: 8px; color: var(--accent); font-weight: 600; cursor: pointer; }
+.file input:focus-visible + span { outline: 2px solid var(--accent); }
+.hint { font-size: 13px; color: var(--muted); margin: 6px 0 0; }
+.link { background: none; border: 0; color: var(--accent); padding: 0; margin-top: 10px; font: inherit; font-size: 14px; cursor: pointer; text-decoration: underline; }
+.status { font-size: 14px; min-height: 1.4em; margin: 8px 0 0; }
+.status.error { color: #c0392b; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.content { max-width: 720px; }
+@media (max-width: 860px) {
+  .tool { grid-template-columns: 1fr; }
+  .panel { position: static; }
+}
+@media print {
+  .site-header, .site-footer, .no-print { display: none !important; }
+  main { padding: 0 !important; }
+  body { background: #fff !important; }
+  .tool { display: block; margin: 0; }
+}

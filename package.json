@@ -1,0 +1,21 @@
+{
+  "name": "storesheet",
+  "version": "1.0.0",
+  "description": "Free line sheet, catalog and product export tools for Shopify and WooCommerce stores",
+  "scripts": {
+    "test": "node --test --experimental-strip-types tests/products.test.mjs",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "@astrojs/sitemap": "3.7.4",
+    "astro": "7.4.4",
+    "fflate": "0.8.3"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  }
+}

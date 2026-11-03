@@ -1,0 +1,94 @@
+---
+// Shared "add products" panel: CSV upload, store link, sample data.
+// When products load it dispatches `products:loaded` on document with
+// detail { products, source, sample }.
+---
+<fieldset class="product-input">
+  <legend>1. Add products</legend>
+  <div class="tabs" role="tablist">
+    <button type="button" role="tab" class="tab active" data-tab="csv" aria-selected="true">Upload CSV</button>
+    <button type="button" role="tab" class="tab" data-tab="url" aria-selected="false">Store link</button>
+  </div>
+  <div class="tabpanel" data-panel="csv">
+    <label class="file">
+      <input id="csv" type="file" accept=".csv,text/csv" />
+      <span>Choose a CSV file</span>
+    </label>
+    <p class="hint">Shopify export, WooCommerce export, or any sheet with Title, SKU, Price and Image columns.</p>
+  </div>
+  <div class="tabpanel" data-panel="url" hidden>
+    <label for="storeUrl">Store address</label>
+    <div class="row">
+      <input id="storeUrl" type="url" placeholder="yourstore.com" inputmode="url" />
+      <button id="fetchBtn" type="button" class="btn">Import</button>
+    </div>
+    <p class="hint" id="urlHint">Works with Shopify and WooCommerce stores.</p>
+  </div>
+  <button id="sampleBtn" type="button" class="link">Or try it with sample products</button>
+  <p id="status" class="status" role="status" aria-live="polite"></p>
+</fieldset>
+
+<script>
+  import { parseCSV, productsFromCSV, type Product } from '../scripts/products';
+  import { SITE } from '../site.config';
+  import { SAMPLE_PRODUCTS } from '../scripts/sample';
+
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const status = (msg: string, isError = false) => {
+    const el = $('status');
+    el.textContent = msg;
+    el.classList.toggle('error', isError);
+  };
+
+  function emit(products: Product[], source: string, sample = false) {
+    if (!products.length) status(`No products found in ${source}.`, true);
+    else status(`Loaded ${products.length} product${products.length === 1 ? '' : 's'} from ${source}.`);
+    document.dispatchEvent(new CustomEvent('products:loaded', { detail: { products, source, sample } }));
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('.product-input .tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll<HTMLButtonElement>('.product-input .tab').forEach((t) => {
+        t.classList.toggle('active', t === tab);
+        t.setAttribute('aria-selected', String(t === tab));
+      });
+      document.querySelectorAll<HTMLElement>('.product-input .tabpanel').forEach((p) => {
+        p.hidden = p.dataset.panel !== tab.dataset.tab;
+      });
+    });
+  });
+
+  $('csv').addEventListener('change', async (e) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    try {
+      emit(productsFromCSV(parseCSV(await file.text())), file.name);
+    } catch (err) {
+      status((err as Error).message, true);
+    }
+  });
+
+  const fetchBtn = $('fetchBtn') as HTMLButtonElement;
+  if (!SITE.apiBase) {
+    fetchBtn.disabled = true;
+    $('urlHint').textContent = 'Store links are coming soon. Upload a CSV for now.';
+  }
+  fetchBtn.addEventListener('click', async () => {
+    const raw = ($('storeUrl') as HTMLInputElement).value.trim();
+    if (!raw) return status('Enter your store address first.', true);
+    fetchBtn.disabled = true;
+    status('Importing products…');
+    try {
+      const res = await fetch(`${SITE.apiBase}/products?url=${encodeURIComponent(raw)}`);
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error || 'Could not import that store.');
+      emit(body.products as Product[], body.store || raw);
+    } catch (err) {
+      status((err as Error).message, true);
+    } finally {
+      fetchBtn.disabled = false;
+    }
+  });
+
+  $('sampleBtn').addEventListener('click', () => emit(SAMPLE_PRODUCTS, 'the sample catalog', true));
+</script>
