@@ -11,6 +11,8 @@ const { title, description, schema } = Astro.props;
 const canonical = new URL(Astro.url.pathname, SITE.url).href;
 const fullTitle = Astro.url.pathname === '/' ? title : `${title} | ${SITE.name}`;
 const year = new Date().getFullYear();
+// Keep search engines out until the real domain is set in site.config.ts.
+const preLaunch = SITE.url.includes('example.com');
 ---
 <!doctype html>
 <html lang="en">
@@ -19,6 +21,7 @@ const year = new Date().getFullYear();
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    {preLaunch && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonical} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE.name} />
