@@ -1,0 +1,323 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProductInput from '../../components/ProductInput.astro';
+import { SITE } from '../../site.config';
+
+const faqs = [
+  {
+    q: 'What is a line sheet?',
+    a: 'A line sheet is a short document wholesale buyers use to order from a brand. It shows each product with a photo, name, style number (SKU), wholesale price and suggested retail price (MSRP), plus how to order.',
+  },
+  {
+    q: 'How is a line sheet different from a catalog or lookbook?',
+    a: 'A line sheet is for ordering: compact, with prices and SKUs. A catalog is a fuller product listing, often for retail customers. A lookbook is mostly styled photos to sell the look of a collection, usually without prices.',
+  },
+  {
+    q: 'Does this work with WooCommerce, Wix or Squarespace?',
+    a: 'Yes. Upload a product CSV export from any platform. The store-link option works with Shopify and WooCommerce stores whose product data is public.',
+  },
+  {
+    q: 'How do I export my products from Shopify?',
+    a: 'In your Shopify admin go to Products, click Export, choose "All products" and "CSV for Excel, Numbers or other spreadsheet programs", then upload the file here.',
+  },
+  {
+    q: 'How is the wholesale price calculated?',
+    a: 'By default it is 50% of the retail price, the common "keystone" markup. Change the percentage to match your terms, or use your own wholesale column in the CSV.',
+  },
+  {
+    q: 'Is my data uploaded anywhere?',
+    a: 'CSV files are read in your browser and never leave your computer. Store links are fetched through our server, which reads only public storefront data and stores nothing.',
+  },
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Line Sheet Maker',
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    description: 'Free wholesale line sheet maker for Shopify, WooCommerce and any store via CSV.',
+    url: new URL('/tools/line-sheet-maker/', SITE.url).href,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  },
+];
+---
+<Base
+  title="Free Wholesale Line Sheet Maker for Shopify & WooCommerce"
+  description="Make a printable wholesale line sheet from your Shopify or WooCommerce store, or any product CSV. Add your logo, wholesale prices and MSRP. Free, no account."
+  schema={schema}
+>
+  <div class="no-print">
+    <span class="badge">Free · No account</span>
+    <h1>Wholesale Line Sheet Maker</h1>
+    <p class="lead">
+      Turn your products into a clean, printable line sheet with photos, SKUs, wholesale prices and MSRP.
+      Works with Shopify, WooCommerce and any store that exports a CSV.
+    </p>
+  </div>
+
+  <div class="tool">
+    <aside class="panel no-print" aria-label="Line sheet settings">
+      <ProductInput />
+
+      <fieldset>
+        <legend>2. Brand details</legend>
+        <label for="brand">Brand name</label>
+        <input id="brand" type="text" placeholder="Your brand" />
+        <label for="sheetTitle">Collection or season</label>
+        <input id="sheetTitle" type="text" placeholder="Spring 2027 Wholesale" />
+        <label for="logo">Logo (optional)</label>
+        <input id="logo" type="file" accept="image/*" />
+        <label for="contact">Ordering contact</label>
+        <input id="contact" type="text" placeholder="orders@yourbrand.com · (555) 010-0000" />
+        <label for="terms">Terms</label>
+        <input id="terms" type="text" placeholder="Minimum order $250 · Net 30 · Ships in 2 weeks" />
+      </fieldset>
+
+      <fieldset>
+        <legend>3. Prices and layout</legend>
+        <label for="percent">Wholesale price, % of retail</label>
+        <input id="percent" type="number" min="1" max="100" value="50" />
+        <label class="check"><input id="showMsrp" type="checkbox" checked /> Show MSRP</label>
+        <label class="check"><input id="showSku" type="checkbox" checked /> Show SKU</label>
+        <label for="cols">Products per row</label>
+        <select id="cols">
+          <option value="2">2</option>
+          <option value="3" selected>3</option>
+          <option value="4">4</option>
+        </select>
+      </fieldset>
+
+      <div class="actions">
+        <button id="printBtn" type="button" class="btn" disabled>Save as PDF / Print</button>
+        <button id="csvBtn" type="button" class="btn secondary" disabled>Download CSV</button>
+      </div>
+      <p class="hint">In the print dialog, choose "Save as PDF".</p>
+    </aside>
+
+    <section class="preview" aria-label="Line sheet preview">
+      <div id="sheet" class="sheet">
+        <header class="sheet-head">
+          <img id="sheetLogo" alt="" hidden />
+          <div>
+            <p id="sheetBrand" class="sheet-brand">Your brand</p>
+            <p id="sheetSub" class="sheet-sub">Wholesale line sheet</p>
+          </div>
+          <p id="sheetDate" class="sheet-date"></p>
+        </header>
+        <div id="items" class="items cols-3">
+          <p class="empty">Your products will appear here.</p>
+        </div>
+        <footer class="sheet-foot">
+          <p id="sheetContact"></p>
+          <p id="sheetTerms"></p>
+        </footer>
+      </div>
+      <p id="limitNote" class="hint no-print" hidden></p>
+    </section>
+  </div>
+
+  <div class="content no-print">
+    <h2>How to make a line sheet</h2>
+    <ol>
+      <li><strong>Add your products.</strong> Upload a product CSV from your store, or paste your Shopify or WooCommerce store address.</li>
+      <li><strong>Add your brand details.</strong> Brand name, logo, the collection or season, and how buyers should order.</li>
+      <li><strong>Set your wholesale price.</strong> The default is 50% of retail. Change it to match your terms.</li>
+      <li><strong>Save as PDF.</strong> Click "Save as PDF / Print" and choose "Save as PDF" in the print dialog. Email it to buyers or print it for trade shows.</li>
+    </ol>
+
+    <h2>What goes on a wholesale line sheet</h2>
+    <ul>
+      <li><strong>Product photo</strong> on a clean background.</li>
+      <li><strong>Product name and style number (SKU)</strong> so buyers can order precisely.</li>
+      <li><strong>Wholesale price and MSRP</strong> so retailers can see their margin.</li>
+      <li><strong>Ordering terms:</strong> minimum order, payment terms, lead time.</li>
+      <li><strong>Contact details</strong> for placing orders.</li>
+    </ul>
+
+    <h2>Frequently asked questions</h2>
+    {faqs.map((f) => (
+      <details>
+        <summary>{f.q}</summary>
+        <p>{f.a}</p>
+      </details>
+    ))}
+  </div>
+</Base>
+
+<style is:global>
+  /* Global so styles reach the product cards the script creates. Everything is scoped by class names. */
+  .tool { display: grid; grid-template-columns: 320px 1fr; gap: 24px; align-items: start; margin-top: 24px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .sheet { background: #fff; color: #14181f; border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; min-height: 400px; }
+  .sheet-head { display: flex; align-items: center; gap: 16px; border-bottom: 2px solid #14181f; padding-bottom: 14px; margin-bottom: 20px; }
+  .sheet-head img { max-height: 56px; max-width: 140px; object-fit: contain; }
+  .sheet-brand { font-size: 22px; font-weight: 700; margin: 0; }
+  .sheet-sub { margin: 0; color: #5b6472; }
+  .sheet-date { margin: 0 0 0 auto; color: #5b6472; font-size: 13px; }
+  .items { display: grid; gap: 18px; }
+  .items.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .items.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .items.cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .item { break-inside: avoid; }
+  .item .ph { aspect-ratio: 1; background: #f1f2f4; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .item .ph img { width: 100%; height: 100%; object-fit: cover; }
+  .item h3 { font-size: 14px; margin: 8px 0 2px; line-height: 1.3; }
+  .item p { margin: 0; font-size: 13px; line-height: 1.45; color: #5b6472; }
+  .item .price { color: #14181f; font-weight: 600; }
+  .empty { color: #5b6472; grid-column: 1 / -1; text-align: center; padding: 60px 0; }
+  .sheet-foot { border-top: 1px solid #e2e5ea; margin-top: 24px; padding-top: 12px; font-size: 13px; color: #5b6472; }
+  .sheet-foot p { margin: 2px 0; }
+  .content { max-width: 720px; }
+
+  @media (max-width: 860px) {
+    .tool { grid-template-columns: 1fr; }
+    .panel { position: static; }
+    .items.cols-3, .items.cols-4 { grid-template-columns: repeat(2, 1fr); }
+    .sheet { padding: 16px; }
+  }
+  @media print {
+    @page { margin: 12mm; }
+    .site-header, .site-footer, .no-print { display: none !important; }
+    main { padding: 0 !important; }
+    body { background: #fff !important; }
+    .tool { display: block; margin: 0; }
+    .sheet { border: 0; padding: 0; }
+    /* Inline blocks never split across pages; grid items can. */
+    .items { display: block !important; font-size: 0; }
+    .item { display: inline-block; vertical-align: top; font-size: 16px; margin: 0 0 18px; padding-right: 18px; break-inside: avoid; page-break-inside: avoid; }
+    .items.cols-2 .item { width: 50%; }
+    .items.cols-3 .item { width: 33.333%; }
+    .items.cols-4 .item { width: 25%; }
+  }
+</style>
+
+<script>
+  import { wholesale, formatMoney, toCSV, type Product } from '../../scripts/products';
+  import { SITE } from '../../site.config';
+
+  const FREE_LIMIT = 50;
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  let products: Product[] = [];
+  let logoUrl = '';
+
+  // Only show images from https or inline data, never javascript: or other schemes.
+  const safeImage = (src: string) => (/^https:\/\//i.test(src) || /^data:image\//i.test(src) ? src : '');
+
+  function render() {
+    const percent = Math.min(100, Math.max(1, Number(($('percent') as HTMLInputElement).value) || 50));
+    const showMsrp = ($('showMsrp') as HTMLInputElement).checked;
+    const showSku = ($('showSku') as HTMLInputElement).checked;
+    const cols = ($('cols') as HTMLSelectElement).value;
+    const brand = ($('brand') as HTMLInputElement).value.trim();
+    const title = ($('sheetTitle') as HTMLInputElement).value.trim();
+
+    $('sheetBrand').textContent = brand || 'Your brand';
+    $('sheetSub').textContent = title || 'Wholesale line sheet';
+    $('sheetDate').textContent = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    $('sheetContact').textContent = ($('contact') as HTMLInputElement).value.trim();
+    $('sheetTerms').textContent = ($('terms') as HTMLInputElement).value.trim();
+    const logo = $('sheetLogo') as HTMLImageElement;
+    logo.hidden = !logoUrl;
+    if (logoUrl) logo.src = logoUrl;
+
+    const items = $('items');
+    items.className = `items cols-${cols}`;
+    items.replaceChildren();
+    const shown = products.slice(0, FREE_LIMIT);
+
+    if (!shown.length) {
+      const p = document.createElement('p');
+      p.className = 'empty';
+      p.textContent = 'Your products will appear here.';
+      items.append(p);
+    }
+    for (const prod of shown) {
+      const card = document.createElement('article');
+      card.className = 'item';
+      const ph = document.createElement('div');
+      ph.className = 'ph';
+      const src = safeImage(prod.image);
+      if (src) {
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = prod.title;
+        img.loading = 'lazy';
+        img.referrerPolicy = 'no-referrer';
+        ph.append(img);
+      }
+      const h = document.createElement('h3');
+      h.textContent = prod.title;
+      card.append(ph, h);
+      if (showSku && prod.sku) {
+        const sku = document.createElement('p');
+        sku.textContent = `SKU ${prod.sku}`;
+        card.append(sku);
+      }
+      const price = document.createElement('p');
+      price.className = 'price';
+      price.textContent = `Wholesale ${formatMoney(wholesale(prod.price, percent))}`;
+      card.append(price);
+      if (showMsrp) {
+        const msrp = document.createElement('p');
+        msrp.textContent = `MSRP ${formatMoney(prod.price)}`;
+        card.append(msrp);
+      }
+      items.append(card);
+    }
+
+    const note = $('limitNote');
+    note.hidden = products.length <= FREE_LIMIT;
+    note.textContent = `Showing the first ${FREE_LIMIT} of ${products.length} products. Remove some rows from your CSV, or email ${SITE.supportEmail} to join the waitlist for unlimited catalogs.`;
+    ($('printBtn') as HTMLButtonElement).disabled = !products.length;
+    ($('csvBtn') as HTMLButtonElement).disabled = !products.length;
+  }
+
+  document.addEventListener('products:loaded', (e) => {
+    const { products: list, sample } = (e as CustomEvent<{ products: Product[]; sample: boolean }>).detail;
+    if (sample) {
+      ($('brand') as HTMLInputElement).value ||= 'Juniper & Clay';
+      ($('sheetTitle') as HTMLInputElement).value ||= 'Spring 2027 Wholesale';
+      ($('contact') as HTMLInputElement).value ||= 'orders@juniperandclay.example';
+      ($('terms') as HTMLInputElement).value ||= 'Minimum order $250 · Net 30 · Ships in 2 weeks';
+    }
+    products = list;
+    render();
+  });
+
+  $('logo').addEventListener('change', (e) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      logoUrl = String(reader.result);
+      render();
+    };
+    reader.readAsDataURL(file);
+  });
+
+  ['brand', 'sheetTitle', 'contact', 'terms', 'percent', 'showMsrp', 'showSku', 'cols'].forEach((id) => {
+    $(id).addEventListener('input', render);
+    $(id).addEventListener('change', render);
+  });
+
+  $('printBtn').addEventListener('click', () => window.print());
+  $('csvBtn').addEventListener('click', () => {
+    const percent = Number(($('percent') as HTMLInputElement).value) || 50;
+    const blob = new Blob([toCSV(products.slice(0, FREE_LIMIT), percent)], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'line-sheet.csv';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  render();
+</script>

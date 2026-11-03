@@ -1,0 +1,191 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProductInput from '../../components/ProductInput.astro';
+import { SITE } from '../../site.config';
+import { EXPORT_COLUMNS } from '../../scripts/products';
+
+const faqs = [
+  {
+    q: 'Can I export products from a Shopify store I don’t own?',
+    a: 'Only the product information the store already shows publicly on its storefront: names, prices, images, descriptions and links. You can’t get inventory, costs, orders or customers. Use what you export responsibly and respect the store’s copyright on photos and text.',
+  },
+  {
+    q: 'How do I export my own products from Shopify?',
+    a: 'Shopify has a built-in export: in your admin go to Products → Export. That file has every field. This tool is useful when you want a cleaner file with just the columns that matter, an Excel file, or a WooCommerce store’s products.',
+  },
+  {
+    q: 'Does it work with WooCommerce?',
+    a: 'Yes. Paste the store address, or upload a WooCommerce product export to clean it up.',
+  },
+  {
+    q: 'Why is the Excel file better than CSV?',
+    a: 'Excel keeps prices as numbers and long descriptions intact, freezes the header row and sets sensible column widths. CSV is better for importing into other systems.',
+  },
+  {
+    q: 'Is there a product limit?',
+    a: 'Store links import up to 250 products. CSV files have no limit.',
+  },
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Products to CSV / Excel',
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    description: 'Export a Shopify or WooCommerce product list to a clean CSV or Excel file.',
+    url: new URL('/tools/products-to-csv/', SITE.url).href,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  },
+];
+---
+<Base
+  title="Export Shopify Products to CSV or Excel — Free Tool"
+  description="Export a Shopify or WooCommerce product list to a clean CSV or Excel file: titles, SKUs, prices, descriptions, image links. Free, no install."
+  schema={schema}
+>
+  <span class="badge">Free · No account</span>
+  <h1>Export products to CSV or Excel</h1>
+  <p class="lead">
+    Get a clean spreadsheet of a store's products: titles, SKUs, prices, descriptions and image links.
+    Works with Shopify, WooCommerce and messy CSV exports from any platform.
+  </p>
+
+  <div class="tool">
+    <aside class="panel" aria-label="Export settings">
+      <ProductInput />
+      <fieldset>
+        <legend>2. Choose columns</legend>
+        <div id="cols">
+          {EXPORT_COLUMNS.map((c, i) => (
+            <label class="check"><input type="checkbox" data-col={i} checked={c !== 'Description'} /> {c}</label>
+          ))}
+        </div>
+      </fieldset>
+      <div class="actions">
+        <button id="xlsxBtn" type="button" class="btn" disabled>Download Excel</button>
+        <button id="csvBtn" type="button" class="btn secondary" disabled>Download CSV</button>
+      </div>
+    </aside>
+
+    <section aria-label="Preview">
+      <div class="table-wrap">
+        <table id="preview">
+          <thead><tr id="head"></tr></thead>
+          <tbody id="body"><tr><td class="empty">Your products will appear here.</td></tr></tbody>
+        </table>
+      </div>
+      <p id="count" class="hint"></p>
+    </section>
+  </div>
+
+  <div class="content">
+    <h2>How to export products to a spreadsheet</h2>
+    <ol>
+      <li><strong>Add products.</strong> Paste a Shopify or WooCommerce store address, or upload a product CSV.</li>
+      <li><strong>Pick your columns.</strong> Untick anything you don't need.</li>
+      <li><strong>Download.</strong> Choose Excel for reading and editing, or CSV for importing into another system.</li>
+    </ol>
+
+    <h2>What people use it for</h2>
+    <ul>
+      <li>Sending a product list to a wholesale buyer or sales rep</li>
+      <li>Moving products between platforms</li>
+      <li>Checking prices and SKUs across your catalog in one sheet</li>
+      <li>Cleaning a cluttered Shopify export down to the columns that matter</li>
+    </ul>
+
+    <p class="card">Need it on paper? Turn the same products into a printable <a href="/tools/line-sheet-maker/">wholesale line sheet</a>.</p>
+
+    <h2>Frequently asked questions</h2>
+    {faqs.map((f) => (
+      <details>
+        <summary>{f.q}</summary>
+        <p>{f.a}</p>
+      </details>
+    ))}
+  </div>
+</Base>
+
+<style>
+  .table-wrap { overflow: auto; max-height: 560px; border: 1px solid var(--line); border-radius: var(--radius); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { position: sticky; top: 0; background: var(--surface); font-weight: 600; white-space: nowrap; }
+  td { max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  td.empty { color: var(--muted); text-align: center; padding: 48px; }
+  .content { margin-top: 16px; }
+</style>
+
+<script>
+  import { EXPORT_COLUMNS, exportRows, tableToCSV, type Product } from '../../scripts/products';
+  import { buildXlsx } from '../../scripts/xlsx';
+
+  const PREVIEW_ROWS = 100;
+  let products: Product[] = [];
+  const $ = (id: string) => document.getElementById(id)!;
+
+  const selected = () =>
+    [...document.querySelectorAll<HTMLInputElement>('#cols input')].filter((c) => c.checked).map((c) => Number(c.dataset.col));
+
+  function table() {
+    const keep = selected();
+    const header = keep.map((i) => EXPORT_COLUMNS[i]);
+    const rows = exportRows(products).map((r) => keep.map((i) => r[i]));
+    return { header, rows };
+  }
+
+  function render() {
+    const { header, rows } = table();
+    const head = $('head');
+    head.replaceChildren(...header.map((h) => Object.assign(document.createElement('th'), { textContent: h })));
+    const body = $('body');
+    body.replaceChildren();
+    if (!rows.length) {
+      const td = Object.assign(document.createElement('td'), { className: 'empty', textContent: 'Your products will appear here.', colSpan: Math.max(1, header.length) });
+      const tr = document.createElement('tr');
+      tr.append(td);
+      body.append(tr);
+    }
+    for (const r of rows.slice(0, PREVIEW_ROWS)) {
+      const tr = document.createElement('tr');
+      for (const v of r) tr.append(Object.assign(document.createElement('td'), { textContent: String(v), title: String(v) }));
+      body.append(tr);
+    }
+    $('count').textContent = products.length
+      ? `${products.length} products${products.length > PREVIEW_ROWS ? ` (previewing the first ${PREVIEW_ROWS}; downloads include all)` : ''}.`
+      : '';
+    const none = !products.length || !header.length;
+    ($('csvBtn') as HTMLButtonElement).disabled = none;
+    ($('xlsxBtn') as HTMLButtonElement).disabled = none;
+  }
+
+  function download(data: BlobPart, type: string, name: string) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([data], { type }));
+    a.download = name;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
+
+  document.addEventListener('products:loaded', (e) => {
+    products = (e as CustomEvent<{ products: Product[] }>).detail.products;
+    render();
+  });
+  $('cols').addEventListener('change', render);
+  $('csvBtn').addEventListener('click', () => {
+    const { header, rows } = table();
+    download('﻿' + tableToCSV(header, rows), 'text/csv;charset=utf-8', 'products.csv');
+  });
+  $('xlsxBtn').addEventListener('click', () => {
+    const { header, rows } = table();
+    download(buildXlsx(header, rows), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'products.xlsx');
+  });
+  render();
+</script>

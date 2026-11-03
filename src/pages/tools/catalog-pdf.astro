@@ -1,0 +1,265 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProductInput from '../../components/ProductInput.astro';
+import { SITE } from '../../site.config';
+
+const faqs = [
+  {
+    q: 'What’s the difference between this and the line sheet maker?',
+    a: 'A catalog is for showing and selling: a cover page, larger photos, product descriptions and retail prices, grouped by category. A line sheet is a compact ordering sheet for wholesale buyers with wholesale prices and SKUs.',
+  },
+  {
+    q: 'Can I make a catalog from my Shopify store?',
+    a: 'Yes. Paste your store address, or export your products from Shopify (Products → Export) and upload the CSV. Descriptions and categories come through automatically.',
+  },
+  {
+    q: 'How do I save it as a PDF?',
+    a: 'Click "Save as PDF / Print" and choose "Save as PDF" as the printer. Turn on "Background graphics" in the print settings to keep the cover colour.',
+  },
+  {
+    q: 'Can I hide prices?',
+    a: 'Yes. Untick "Show prices" to make a lookbook-style catalog without prices.',
+  },
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Product Catalog PDF Maker',
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    description: 'Free product catalog maker: turn a Shopify or WooCommerce store, or any CSV, into a printable PDF catalog.',
+    url: new URL('/tools/catalog-pdf/', SITE.url).href,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  },
+];
+---
+<Base
+  title="Free Product Catalog PDF Maker for Shopify & WooCommerce"
+  description="Turn your Shopify or WooCommerce products, or any CSV, into a printable PDF catalog with a cover page, photos, descriptions and prices. Free, no account."
+  schema={schema}
+>
+  <div class="no-print">
+    <span class="badge">Free · No account</span>
+    <h1>Product Catalog PDF Maker</h1>
+    <p class="lead">
+      Make a clean product catalog with a cover page, photos, descriptions and prices, grouped by category.
+      Save it as a PDF to email, share or print.
+    </p>
+  </div>
+
+  <div class="tool">
+    <aside class="panel no-print" aria-label="Catalog settings">
+      <ProductInput />
+      <fieldset>
+        <legend>2. Cover page</legend>
+        <label for="brand">Brand name</label>
+        <input id="brand" type="text" placeholder="Your brand" />
+        <label for="catTitle">Catalog title</label>
+        <input id="catTitle" type="text" placeholder="Product Catalog 2027" />
+        <label for="intro">Short intro (optional)</label>
+        <textarea id="intro" rows="3" placeholder="One or two sentences about your brand"></textarea>
+        <label for="logo">Logo (optional)</label>
+        <input id="logo" type="file" accept="image/*" />
+        <label for="coverColor">Cover colour</label>
+        <input id="coverColor" type="color" value="#1f6f5c" />
+        <label for="contact">Contact line</label>
+        <input id="contact" type="text" placeholder="yourbrand.com · hello@yourbrand.com" />
+      </fieldset>
+      <fieldset>
+        <legend>3. Layout</legend>
+        <label class="check"><input id="showPrice" type="checkbox" checked /> Show prices</label>
+        <label class="check"><input id="showDesc" type="checkbox" checked /> Show descriptions</label>
+        <label class="check"><input id="showSku" type="checkbox" /> Show SKU</label>
+        <label class="check"><input id="group" type="checkbox" checked /> Group by category</label>
+        <label class="check"><input id="newPage" type="checkbox" /> Each category on a new page</label>
+      </fieldset>
+      <div class="actions">
+        <button id="printBtn" type="button" class="btn" disabled>Save as PDF / Print</button>
+      </div>
+      <p class="hint">Choose "Save as PDF" and turn on "Background graphics".</p>
+    </aside>
+
+    <section aria-label="Catalog preview">
+      <div id="catalog" class="catalog">
+        <div id="cover" class="cover">
+          <img id="coverLogo" alt="" hidden />
+          <p id="coverBrand" class="cover-brand">Your brand</p>
+          <p id="coverTitle" class="cover-title">Product Catalog</p>
+          <p id="coverIntro" class="cover-intro"></p>
+          <p id="coverContact" class="cover-contact"></p>
+        </div>
+        <div id="pages"><p class="cat-empty">Your products will appear here.</p></div>
+      </div>
+      <p id="limitNote" class="hint no-print" hidden></p>
+    </section>
+  </div>
+
+  <div class="content no-print">
+    <h2>How to make a product catalog</h2>
+    <ol>
+      <li><strong>Add products</strong> from your store link or a CSV export.</li>
+      <li><strong>Design the cover:</strong> brand name, catalog title, logo and colour.</li>
+      <li><strong>Choose what to show:</strong> prices, descriptions, SKUs, and whether to group by category.</li>
+      <li><strong>Save as PDF</strong> and share it by email, on your website, or in print.</li>
+    </ol>
+    <p class="card">Selling wholesale? Make a compact <a href="/tools/line-sheet-maker/">line sheet</a> with wholesale prices instead.</p>
+    <h2>Frequently asked questions</h2>
+    {faqs.map((f) => (
+      <details>
+        <summary>{f.q}</summary>
+        <p>{f.a}</p>
+      </details>
+    ))}
+  </div>
+</Base>
+
+<style is:global>
+  .catalog { background: #fff; color: #14181f; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  .cover { --cover: #1f6f5c; background: var(--cover); color: #fff; padding: 72px 40px; min-height: 420px; display: flex; flex-direction: column; justify-content: center; }
+  .cover img { max-height: 72px; max-width: 200px; object-fit: contain; margin-bottom: 24px; align-self: flex-start; background: #fff; padding: 8px; border-radius: 6px; }
+  .cover-brand { font-size: 16px; letter-spacing: 0.12em; text-transform: uppercase; margin: 0 0 8px; opacity: 0.9; }
+  .cover-title { font-size: 40px; font-weight: 700; line-height: 1.1; margin: 0 0 16px; }
+  .cover-intro { font-size: 17px; max-width: 520px; margin: 0 0 24px; opacity: 0.92; white-space: pre-line; }
+  .cover-contact { font-size: 14px; margin: auto 0 0; opacity: 0.85; }
+  #pages { padding: 32px 40px; }
+  .cat-section h2 { font-size: 22px; margin: 8px 0 16px; padding-bottom: 8px; border-bottom: 2px solid #14181f; }
+  .cat-section + .cat-section { margin-top: 32px; }
+  .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  .cat-item { break-inside: avoid; }
+  .cat-item .ph { aspect-ratio: 4 / 3; background: #f1f2f4; border-radius: 6px; overflow: hidden; }
+  .cat-item .ph img { width: 100%; height: 100%; object-fit: cover; }
+  .cat-item h3 { font-size: 16px; margin: 10px 0 4px; line-height: 1.3; }
+  .cat-item .meta { margin: 0; font-size: 14px; font-weight: 600; }
+  .cat-item .sku { margin: 2px 0 0; font-size: 12px; color: #5b6472; }
+  .cat-item .desc { margin: 6px 0 0; font-size: 13px; line-height: 1.5; color: #3d4450; }
+  .cat-empty { color: #5b6472; text-align: center; padding: 48px 0; }
+  @media (max-width: 640px) {
+    .cover { padding: 40px 20px; min-height: 300px; }
+    .cover-title { font-size: 30px; }
+    #pages { padding: 20px; }
+    .cat-grid { grid-template-columns: 1fr; }
+  }
+  @media print {
+    @page { margin: 12mm; }
+    .catalog { border: 0; border-radius: 0; }
+    .cover { min-height: 250mm; break-after: page; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    #pages { padding: 0; }
+    .cat-grid { display: block; font-size: 0; }
+    .cat-item { display: inline-block; vertical-align: top; width: 50%; padding: 0 12px 20px 0; font-size: 16px; break-inside: avoid; page-break-inside: avoid; }
+    /* Keep each heading with its first products. */
+    .cat-section h2 { break-after: avoid; page-break-after: avoid; }
+    .cat-grid { break-before: avoid; page-break-before: avoid; }
+    .cat-section.new-page { break-before: page; }
+    .cat-section.new-page:first-child { break-before: auto; }
+  }
+</style>
+
+<script>
+  import { formatMoney, type Product } from '../../scripts/products';
+
+  const FREE_LIMIT = 50;
+  const DESC_CHARS = 220;
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const val = (id: string) => ($(id) as HTMLInputElement).value.trim();
+  const on = (id: string) => ($(id) as HTMLInputElement).checked;
+  const safeImage = (src: string) => (/^https:\/\//i.test(src) || /^data:image\//i.test(src) ? src : '');
+  let products: Product[] = [];
+  let logoUrl = '';
+
+  const el = (tag: string, cls: string, text?: string) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined) n.textContent = text;
+    return n;
+  };
+  const shorten = (s: string) => (s.length > DESC_CHARS ? `${s.slice(0, DESC_CHARS).replace(/\s+\S*$/, '')}…` : s);
+
+  function render() {
+    $('cover').style.setProperty('--cover', val('coverColor') || '#1f6f5c');
+    $('coverBrand').textContent = val('brand') || 'Your brand';
+    $('coverTitle').textContent = val('catTitle') || 'Product Catalog';
+    $('coverIntro').textContent = ($('intro') as HTMLTextAreaElement).value.trim();
+    $('coverContact').textContent = val('contact');
+    const logo = $('coverLogo') as HTMLImageElement;
+    logo.hidden = !logoUrl;
+    if (logoUrl) logo.src = logoUrl;
+
+    const pages = $('pages');
+    pages.replaceChildren();
+    const shown = products.slice(0, FREE_LIMIT);
+    if (!shown.length) pages.append(el('p', 'cat-empty', 'Your products will appear here.'));
+
+    const groups = new Map<string, Product[]>();
+    for (const p of shown) {
+      const key = on('group') ? p.type || 'Other products' : '';
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key)!.push(p);
+    }
+    for (const [name, items] of groups) {
+      const section = el('section', `cat-section${on('newPage') && on('group') ? ' new-page' : ''}`);
+      if (name) section.append(el('h2', '', name));
+      const grid = el('div', 'cat-grid');
+      for (const p of items) {
+        const card = el('article', 'cat-item');
+        const ph = el('div', 'ph');
+        const src = safeImage(p.image);
+        if (src) {
+          const img = document.createElement('img');
+          img.src = src;
+          img.alt = p.title;
+          img.loading = 'lazy';
+          img.referrerPolicy = 'no-referrer';
+          ph.append(img);
+        }
+        card.append(ph, el('h3', '', p.title));
+        if (on('showPrice') && p.price !== null) card.append(el('p', 'meta', formatMoney(p.price)));
+        if (on('showSku') && p.sku) card.append(el('p', 'sku', `SKU ${p.sku}`));
+        if (on('showDesc') && p.description) card.append(el('p', 'desc', shorten(p.description)));
+        grid.append(card);
+      }
+      section.append(grid);
+      pages.append(section);
+    }
+
+    const note = $('limitNote');
+    note.hidden = products.length <= FREE_LIMIT;
+    note.textContent = `Showing the first ${FREE_LIMIT} of ${products.length} products in the free version.`;
+    ($('printBtn') as HTMLButtonElement).disabled = !products.length;
+  }
+
+  document.addEventListener('products:loaded', (e) => {
+    const { products: list, sample } = (e as CustomEvent<{ products: Product[]; sample: boolean }>).detail;
+    if (sample) {
+      ($('brand') as HTMLInputElement).value ||= 'Juniper & Clay';
+      ($('catTitle') as HTMLInputElement).value ||= 'Home Collection 2027';
+      ($('intro') as HTMLTextAreaElement).value ||= 'Small-batch stoneware, made by hand in Portland, Oregon.';
+      ($('contact') as HTMLInputElement).value ||= 'juniperandclay.example · hello@juniperandclay.example';
+    }
+    products = list;
+    render();
+  });
+
+  $('logo').addEventListener('change', (e) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      logoUrl = String(reader.result);
+      render();
+    };
+    reader.readAsDataURL(file);
+  });
+  ['brand', 'catTitle', 'intro', 'contact', 'coverColor', 'showPrice', 'showDesc', 'showSku', 'group', 'newPage'].forEach((id) => {
+    $(id).addEventListener('input', render);
+    $(id).addEventListener('change', render);
+  });
+  $('printBtn').addEventListener('click', () => window.print());
+  render();
+</script>
