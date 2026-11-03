@@ -36,7 +36,7 @@ export function parseCSV(text: string): string[][] {
   let row: string[] = [];
   let field = '';
   let inQuotes = false;
-  const s = text.replace(/^﻿/, '');
+  const s = text.charCodeAt(0) === 0xfeff ? text.slice(1) : text; // drop a byte-order mark
   for (let i = 0; i < s.length; i++) {
     const c = s[i];
     if (inQuotes) {

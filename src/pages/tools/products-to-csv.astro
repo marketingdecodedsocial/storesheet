@@ -181,7 +181,7 @@ const schema = [
   $('cols').addEventListener('change', render);
   $('csvBtn').addEventListener('click', () => {
     const { header, rows } = table();
-    download('﻿' + tableToCSV(header, rows), 'text/csv;charset=utf-8', 'products.csv');
+    download(String.fromCharCode(0xfeff) + tableToCSV(header, rows), 'text/csv;charset=utf-8', 'products.csv');
   });
   $('xlsxBtn').addEventListener('click', () => {
     const { header, rows } = table();
