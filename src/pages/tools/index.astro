@@ -1,0 +1,20 @@
+---
+import Base from '../../layouts/Base.astro';
+import { TOOLS } from '../../site.config';
+---
+<Base
+  title="Free Ecommerce Tools for Shopify and WooCommerce Stores"
+  description="Free tools to make line sheets and catalogs and export products from Shopify, WooCommerce or any store via CSV."
+>
+  <h1>Ecommerce tools</h1>
+  <p class="lead">Free, browser-based tools for store owners, wholesale brands and sales reps.</p>
+  <div class="grid">
+    {TOOLS.map((t) => (
+      <div class="card">
+        <h3>{t.live ? <a href={`/tools/${t.slug}/`}>{t.name}</a> : t.name}</h3>
+        <p class="muted">{t.blurb}</p>
+        {!t.live && <span class="badge">Coming soon</span>}
+      </div>
+    ))}
+  </div>
+</Base>

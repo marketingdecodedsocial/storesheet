@@ -1,0 +1,24 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../site.config';
+---
+<Base title="Privacy Policy" description={`How ${SITE.name} handles your data.`}>
+  <h1>Privacy Policy</h1>
+  <p class="muted">Draft — review before launch.</p>
+
+  <h2>CSV uploads</h2>
+  <p>Files you upload are read in your browser. They are not sent to our servers.</p>
+
+  <h2>Store links</h2>
+  <p>
+    When you paste a store link, our server requests that store's <strong>public</strong> product data
+    (the same data anyone can see on the storefront) and passes it back to your browser.
+    We do not store the products or the link. We cannot see private data, orders or customers.
+  </p>
+
+  <h2>Analytics</h2>
+  <p>We use privacy-friendly, cookie-free page analytics to count visits. No ad tracking.</p>
+
+  <h2>Contact</h2>
+  <p><a href={`mailto:${SITE.supportEmail}`}>{SITE.supportEmail}</a></p>
+</Base>

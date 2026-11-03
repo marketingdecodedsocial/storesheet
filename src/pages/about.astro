@@ -1,0 +1,14 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../site.config';
+---
+<Base title="About" description={`Who makes ${SITE.name} and why the tools are free.`}>
+  <h1>About {SITE.name}</h1>
+  <p class="lead">Simple tools for the boring parts of selling wholesale and online.</p>
+  <p>
+    {SITE.name} is built by Amrendra, founder of Growth Decoded, a small web and growth studio.
+    We make free browser tools for store owners, and a paid Shopify app for brands that need branded,
+    always-up-to-date catalogs.
+  </p>
+  <p>Questions or a feature request? Email <a href={`mailto:${SITE.supportEmail}`}>{SITE.supportEmail}</a>.</p>
+</Base>

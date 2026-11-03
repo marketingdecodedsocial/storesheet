@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE, TOOLS } from '../site.config';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE.name,
+  url: SITE.url,
+  description: SITE.tagline,
+};
+---
+<Base
+  title={`${SITE.name} — Free Line Sheet & Catalog Tools for Shopify and WooCommerce`}
+  description="Make wholesale line sheets, PDF catalogs and product exports from your Shopify or WooCommerce store. Free, no install, no account."
+  schema={schema}
+>
+  <section class="hero">
+    <span class="badge">Free · No install · No account</span>
+    <h1>Wholesale line sheets and catalogs from your store, in a minute</h1>
+    <p class="lead">
+      Paste your Shopify or WooCommerce store link, or upload a product CSV from any platform.
+      Get a clean, printable line sheet for buyers and reps.
+    </p>
+    <a class="btn" href="/tools/line-sheet-maker/">Make a line sheet</a>
+  </section>
+
+  <h2>Tools</h2>
+  <div class="grid">
+    {TOOLS.map((t) => (
+      <div class="card">
+        <h3>{t.live ? <a href={`/tools/${t.slug}/`}>{t.name}</a> : t.name}</h3>
+        <p class="muted">{t.blurb}</p>
+        {!t.live && <span class="badge">Coming soon</span>}
+      </div>
+    ))}
+  </div>
+
+  <h2>Who it's for</h2>
+  <div class="grid">
+    <div class="card"><h3>Wholesale brands</h3><p class="muted">Send buyers a line sheet with SKUs, wholesale prices and MSRP.</p></div>
+    <div class="card"><h3>Sales reps</h3><p class="muted">Print a current catalog before a trade show or store visit.</p></div>
+    <div class="card"><h3>Store owners</h3><p class="muted">Export your product list without installing an app.</p></div>
+  </div>
+</Base>
+
+<style>
+  .hero { padding: 24px 0 8px; }
+  .hero .badge { margin-bottom: 16px; }
+</style>

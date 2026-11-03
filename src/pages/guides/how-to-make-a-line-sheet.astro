@@ -1,0 +1,89 @@
+---
+import Base from '../../layouts/Base.astro';
+import { SITE } from '../../site.config';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: 'How to make a wholesale line sheet',
+  step: [
+    { '@type': 'HowToStep', name: 'Collect your product data', text: 'Export your products as a CSV from your store, or list photo, name, SKU and retail price in a spreadsheet.' },
+    { '@type': 'HowToStep', name: 'Set your wholesale prices', text: 'Most brands sell wholesale at about 50% of retail. Decide your price and your minimum order.' },
+    { '@type': 'HowToStep', name: 'Lay out the sheet', text: 'Show each product with a photo, name, SKU, wholesale price and MSRP, grouped by category.' },
+    { '@type': 'HowToStep', name: 'Add ordering terms and contact', text: 'Add minimum order, payment terms, lead time and how to order.' },
+    { '@type': 'HowToStep', name: 'Export as PDF and send', text: 'Save the line sheet as a PDF and email it to buyers or print it for trade shows.' },
+  ],
+};
+---
+<Base
+  title="How to Make a Wholesale Line Sheet (Free Template)"
+  description="A step-by-step guide to making a wholesale line sheet: what to include, how to price wholesale, and a free tool that builds one from your store."
+  schema={schema}
+>
+  <article class="guide">
+    <h1>How to make a wholesale line sheet</h1>
+    <p class="lead">
+      A line sheet is what a store buyer looks at before ordering from you. Here's what to put on it,
+      how to price it, and the fastest way to make one.
+    </p>
+
+    <p class="card">
+      <strong>Short on time?</strong> The free <a href="/tools/line-sheet-maker/">Line Sheet Maker</a> builds
+      one from your Shopify or WooCommerce store, or any product CSV, in about a minute.
+    </p>
+
+    <h2>What a line sheet is (and isn't)</h2>
+    <p>
+      A line sheet is an ordering document for wholesale buyers. It lists each product with a photo, name,
+      style number, wholesale price and suggested retail price. It's different from a <strong>lookbook</strong>,
+      which sells the mood of a collection with styled photos, and from a <strong>catalog</strong>, which is a
+      fuller product listing, often for retail customers.
+    </p>
+
+    <h2>What to include</h2>
+    <ul>
+      <li><strong>Brand name and logo</strong>, plus the collection or season.</li>
+      <li><strong>Product photo</strong>, ideally on a plain background so products are easy to compare.</li>
+      <li><strong>Product name and SKU</strong> so buyers can order precisely.</li>
+      <li><strong>Wholesale price</strong> and <strong>MSRP</strong> so the buyer sees their margin at a glance.</li>
+      <li><strong>Available sizes or colors</strong>, if they matter for ordering.</li>
+      <li><strong>Ordering terms:</strong> minimum order, payment terms, lead time and shipping.</li>
+      <li><strong>Contact details</strong> for placing an order.</li>
+    </ul>
+
+    <h2>How to price wholesale</h2>
+    <p>
+      The common starting point is <strong>keystone pricing</strong>: the wholesale price is half the retail price,
+      so the store doubles it to reach MSRP. A $40 mug sells wholesale for $20. Some categories run tighter or
+      wider margins, so check what stores in your niche expect, and make sure your wholesale price still covers your
+      costs with profit left over.
+    </p>
+
+    <h2>Step by step</h2>
+    <ol>
+      <li><strong>Collect your product data.</strong> Export a CSV from your store (in Shopify: Products → Export), or list each product in a spreadsheet.</li>
+      <li><strong>Set your wholesale prices and minimum order.</strong></li>
+      <li><strong>Lay out the sheet.</strong> Three or four products per row reads well on a printed page. Group by category.</li>
+      <li><strong>Add ordering terms and contact details</strong> at the bottom of each page.</li>
+      <li><strong>Export as a PDF</strong> and send it to buyers, or print copies for trade shows.</li>
+    </ol>
+
+    <h2>Common mistakes</h2>
+    <ul>
+      <li>Missing SKUs, which makes orders slow and error-prone.</li>
+      <li>Retail prices without wholesale prices, or the other way round.</li>
+      <li>Busy lifestyle photos that make products hard to compare.</li>
+      <li>No minimum order or terms, which leads to back-and-forth emails.</li>
+      <li>An outdated sheet: update it whenever prices or products change.</li>
+    </ul>
+
+    <p class="card">
+      Make yours now with the free <a href="/tools/line-sheet-maker/">Line Sheet Maker</a>. No account needed.
+    </p>
+  </article>
+</Base>
+
+<style>
+  .guide { max-width: 720px; }
+  .guide .card { margin: 24px 0; }
+</style>
